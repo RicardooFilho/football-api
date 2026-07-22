@@ -1,0 +1,28 @@
+name: Notificar jogos do dia
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch: {} 
+
+jobs:
+  notificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Rodar script de notificação
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          CALLMEBOT_PHONE: ${{ secrets.CALLMEBOT_PHONE }}
+          CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
+        run: python notificar_jogos.py
