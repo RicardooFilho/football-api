@@ -7,23 +7,24 @@ from zoneinfo import ZoneInfo
 TIMEZONE = "America/Sao_Paulo"
 
 LIGAS = {
-    71:  "🇧🇷 Brasileirão Série A",
-    13:  "🌎 Libertadores",
-    11:  "🌎 Sul-Americana",
-    73:  "🇧🇷 Copa do Brasil",
-    475: "🇧🇷 Paulistão",
-    39:  "🏴 Premier League",
-    140: "🇪🇸 La Liga",
-    78:  "🇩🇪 Bundesliga",
-    61:  "🇫🇷 Ligue 1",
-    135: "🇮🇹 Serie A (Itália)",
-    2:   "🏆 Champions League",
+    71:  "Brasileirão Série A",
+    13:  "Libertadores",
+    11:  "Sul-Americana",
+    73:  "Copa do Brasil",
+    475: "Paulistão",
+    39:  "Premier League",
+    140: "La Liga",
+    78:  "Bundesliga",
+    61:  "Ligue 1",
+    135: "Serie A (Itália)",
+    2:   "Champions League",
 }
 
 API_FOOTBALL_URL = "https://v3.football.api-sports.io/fixtures"
 
-
 def buscar_jogos_do_dia(api_key: str) -> list[dict]:
+
+
     hoje = datetime.now(ZoneInfo(TIMEZONE)).strftime("%Y-%m-%d")
 
     headers = {"x-apisports-key": api_key}
@@ -47,10 +48,11 @@ def buscar_jogos_do_dia(api_key: str) -> list[dict]:
 
 
 def formatar_mensagem(jogos: list[dict]) -> str:
+
     hoje_formatado = datetime.now(ZoneInfo(TIMEZONE)).strftime("%d/%m/%Y")
 
     if not jogos:
-        return f"⚽ *Jogos de hoje ({hoje_formatado})*\n\nNenhum jogo das ligas acompanhadas hoje."
+        return f"Nenhum jogo das ligas acompanhadas hoje."
 
     jogos_por_liga: dict[int, list[dict]] = {}
     for jogo in jogos:
@@ -84,18 +86,19 @@ def formatar_mensagem(jogos: list[dict]) -> str:
 
 
 def enviar_whatsapp(mensagem: str, phone: str, apikey: str) -> None:
+
     url = "https://api.callmebot.com/whatsapp.php"
     params = {"phone": phone, "text": mensagem, "apikey": apikey}
 
     resp = requests.get(url, params=params, timeout=30)
     resp.raise_for_status()
 
-    print(f"Status HTTP: {resp.status_code}")
-    print(f"Corpo da resposta: {resp.text[:500]}")
-    print(f"Tamanho da mensagem enviada: {len(mensagem)} caracteres")
+    if resp.status_code == 200:
+        print("Mensagem enviada com sucesso para o WhatsApp.")
 
-    if resp.status_code in (200, 203):
-        print("Mensagem enviada (ou aceita) pelo CallMeBot.")
+
+
+
     else:
         print(f"CallMeBot retornou status inesperado: {resp.status_code}")
 
